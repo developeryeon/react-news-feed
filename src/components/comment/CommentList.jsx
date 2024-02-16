@@ -1,11 +1,14 @@
 import { collection, deleteDoc, doc, getDocs, query, setDoc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { db } from "../../firebase";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
 
 export default function CommentList({ postId }) {
   const [comments, setComments] = useState([]);
   const [editedContent, setEditedContent] = useState("");
+
+  const userInfo = useSelector((state) => state.UserInfo.userInfo);
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -115,8 +118,12 @@ export default function CommentList({ postId }) {
               ) : (
                 <>
                   <CommentViewText>{comment.content}</CommentViewText>
-                  <CommentEditButton onClick={() => handleEdit(comment.id)}>수정하기</CommentEditButton>
-                  <CommentDeleteButton onClick={() => onDeleteHandler(comment.id)}>삭제하기</CommentDeleteButton>
+                  {comment.writer === userInfo.userId && (
+                    <>
+                      <CommentEditButton onClick={() => handleEdit(comment.id)}>수정하기</CommentEditButton>
+                      <CommentDeleteButton onClick={() => onDeleteHandler(comment.id)}>삭제하기</CommentDeleteButton>
+                    </>
+                  )}
                 </>
               )}
               <HorizontalRule />
